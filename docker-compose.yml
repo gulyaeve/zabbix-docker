@@ -2,31 +2,22 @@ services:
   postgres-server:    # The Postgres Database Service
     image: postgres:latest
     restart: always
-    environment:   # Username, password and database name variables
-      POSTGRES_USER: zabbix
-      POSTGRES_PASSWORD: zabbix
-      POSTGRES_DB: zabbix
-      PG_DATA: /var/lib/postgresql/data/pgdata #data storage
+    env_file:
+      - .env
     networks:
       - default
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
 
   zabbix-server:     # The main Zabbix Server Software Service
     image: zabbix/zabbix-server-pgsql:latest
     restart: always
-    environment:   # The Postgres database value variable
-      DB_SERVER_HOST: postgres-server
-      DB_SERVER_PORT: 5432
-      POSTGRES_USER: zabbix
-      POSTGRES_PASSWORD: zabbix
-      POSTGRES_DB: zabbix
-      ZBX_HISTORYSTORAGETYPES: log,text #Zabbix configuration variables
-      ZBX_DEBUGLEVEL: 1
-      ZBX_HOUSEKEEPINGFREQUENCY: 1
-      ZBX_MAXHOUSEKEEPERDELETE: 5000
+    env_file:
+      - .env
     depends_on:
       - postgres-server
-    # volumes:  # Volumes for scripts and related files you can add
-    #   - /usr/lib/zabbix/alertscripts:/usr/lib/zabbix/alertscripts
+    volumes:  # Volumes for scripts and related files you can add
+      - ./alertscripts:/usr/lib/zabbix/alertscripts
     ports:
       - 10051:10051
     networks:
@@ -35,34 +26,41 @@ services:
   zabbix-web:    # The main Zabbix web UI or interface 
     image: zabbix/zabbix-web-nginx-pgsql:latest
     restart: always
-    environment:  # Postgres database variables
-      DB_SERVER_HOST: postgres-server
-      DB_SERVER_PORT: 5432
-      POSTGRES_USER: zabbix
-      POSTGRES_PASSWORD: zabbix
-      POSTGRES_DB: zabbix
-      ZBX_SERVER_HOST: zabbix-server  # Zabbix related and Php variables
-      ZBX_POSTMAXSIZE: 64M
-      PHP_TZ: "Europe/Moscow"  
-      ZBX_MAXEXECUTIONTIME: 500
+    env_file:
+      - .env
     depends_on:
       - postgres-server
       - zabbix-server
-    ports:    # Port where Zabbix UI is available
-      - 8080:8080
+    # ports:    # Port where Zabbix UI is available
+    #   - 8080:8080
     networks:
       - default
 
-  # adminer:  #Optional for accessing databases
-  #   image: adminer
-  #   restart: always
-  #   ports:
-  #     - 8080:8081
+  nginx-proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80" # Map external port 80 to Nginx container's port 80
+      # - "443:443" # Uncomment for SSL
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro # Mount custom nginx config
+      # Mount SSL certs here if needed
+    networks:
+      - zabbix_network
+    depends_on:
+      - zabbix-web
   
-  # grafana-xxl:  #optional more functional and creative UI 
-  #   image: monitoringartist/grafana-xxl:latest
-  #   ports:
-  #     - 3000:3000
+  grafana-xxl:  #optional more functional and creative UI 
+    image: monitoringartist/grafana-xxl:latest
+    env_file:
+      - .env
+    depends_on:
+      - Zabbix-web
+    # ports:
+    #   - 3000:3000
+
+volumes:
+  postgresdata:
+
 networks:
   default:
     name: zabbix_network
