@@ -54,7 +54,7 @@ services:
     env_file:
       - .env
     depends_on:
-      - Zabbix-web
+      - zabbix-web
     # ports:
     #   - 3000:3000
 
