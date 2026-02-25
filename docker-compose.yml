@@ -22,6 +22,8 @@ services:
       - 10051:10051
     networks:
       - default
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   zabbix-web:    # The main Zabbix web UI or interface 
     image: zabbix/zabbix-web-nginx-pgsql:latest
