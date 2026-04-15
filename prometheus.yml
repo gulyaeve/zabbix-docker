@@ -5,6 +5,6 @@ scrape_configs:
   - job_name: "cctv"
     metrics_path: /cctv/metrics
     static_configs:
-      - targets: ["172.18.3.79"]
+      - targets: ["cctv.itmoscow"]
     tls_config:
       ca_file: /etc/ssl/cctv.itmoscow.crt
