@@ -81,6 +81,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
+      - ./cctv.itmoscow.crt:/etc/ssl/cctv.itmoscow.crt
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheusdata:/prometheus
     networks:
