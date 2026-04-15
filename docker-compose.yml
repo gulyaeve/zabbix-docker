@@ -61,6 +61,9 @@ services:
     #   - 3000:3000
     networks:
       - default
+    volumes:
+      - ./grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafanadata:/var/lib/grafana
 
   loki:
     image: grafana/loki:latest
@@ -84,6 +87,7 @@ services:
       - default
 
 volumes:
+  grafanadata:
   postgresdata:
   prometheusdata:
 
