@@ -24,6 +24,8 @@ services:
       - default
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    cap_add:
+      - NET_ADMIN
 
   zabbix-web:    # The main Zabbix web UI or interface 
     image: zabbix/zabbix-web-nginx-pgsql:latest
