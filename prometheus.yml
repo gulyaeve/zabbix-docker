@@ -12,8 +12,5 @@ scrape_configs:
   - job_name: "mediamtx"
     metrics_path: /metrics
 
-    params:
-      jwt: ['${MEDIAMTX_JWT}']
-
     static_configs:
       - targets: ['cctv.itmoscow:9998']
