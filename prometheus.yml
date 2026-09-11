@@ -13,4 +13,4 @@ scrape_configs:
     metrics_path: /metrics
 
     static_configs:
-      - targets: ['cctv.itmoscow:9998']
+      - targets: ['10.0.1.9:9998']
