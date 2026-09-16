@@ -39,6 +39,8 @@ services:
     #   - 8080:8080
     networks:
       - default
+    volumes:
+      - ./zabbix_saml_certs:/etc/zabbix/web/certs:ro
 
   nginx-proxy:
     image: nginx:alpine
