@@ -33,7 +33,6 @@ services:
     env_file:
       - .env
     depends_on:
-      - postgres-server
       - zabbix-server
     # ports:    # Port where Zabbix UI is available
     #   - 8080:8080
@@ -55,6 +54,7 @@ services:
       - default
     depends_on:
       - zabbix-web
+      - grafana
   
   grafana:  #optional more functional and creative UI 
     image: grafana/grafana:latest
@@ -63,6 +63,8 @@ services:
       - .env
     depends_on:
       - zabbix-web
+      - prometheus
+      - loki
     # ports:
     #   - 3000:3000
     networks:
@@ -75,7 +77,7 @@ services:
     image: grafana/loki:latest
     restart: always
     depends_on:
-      - zabbix-web
+      - zabbix-server
     container_name: loki
     ports:
       - "3100:3100"
@@ -89,7 +91,7 @@ services:
     container_name: prometheus
     restart: always
     depends_on:
-      - zabbix-web
+      - zabbix-server
     ports:
       - "9090:9090"
     volumes:
